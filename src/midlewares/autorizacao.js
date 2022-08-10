@@ -1,10 +1,21 @@
-module.exports = (cargosObrigatorios) => (requisicao, resposta, proximo) => {
+const controle = require('../controleDeAcesso')
 
-    if (cargosObrigatorios.indexOf(requisicao.user.cargo) === -1) {
+module.exports = (entidade, acao) => (requisicao, resposta, proximo) => {
+
+    const permissoesDoCargo = controle.can(requisicao.user.cargo)
+    const permissao = permissoesDoCargo[acao](entidade)
+
+    if (permissao.granted === false) {
         resposta.status(403)
         resposta.end()
         return
     }
+
+    requisicao.acesso = {
+        atributos: permissao.attributes
+    }
+
+    console.log(requisicao)
 
     proximo()
 }
