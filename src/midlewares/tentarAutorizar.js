@@ -1,0 +1,1 @@
+const autorizacao = require('./autorizacao')
